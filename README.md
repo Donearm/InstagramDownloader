@@ -12,7 +12,7 @@ Make sure to install first [Instaloader](https://github.com/instaloader/instaloa
 
 Then download the script and run as
 
-```python
+```shell
 ./instagram_downloader.py [run|update|profilename]
 ```
 
@@ -22,7 +22,7 @@ There are 3 main operations, `run`, `update` and a profile name. Each can be giv
 
 The start date can be given as an argument, as in
 
-```python
+```shell
 ./instagram_downloader.py -s 2018 01 02 update
 ```
 
