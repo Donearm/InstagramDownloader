@@ -71,6 +71,8 @@ def lastcheck_date(cFile):
 def massDownload(instance, startdate, enddate, operation):
     FILE = 'IG_SL.md'
     NOT_FOUND_FILE = 'IG_not_found.txt'
+    # Emptying the not found file
+    open(NOT_FOUND_FILE, 'w').close()
     with open(FILE) as f:
         content = f.readlines()
         content = ([x.strip() for x in content]) # remove whitespace characters
@@ -84,7 +86,7 @@ def massDownload(instance, startdate, enddate, operation):
                     instance.download_post(p, profilename)
             except instaloader.exceptions.ProfileNotExistsException:
                 print("Profile " + profilename + " was not found")
-                with open(NOT_FOUND_FILE, 'w') as n:
+                with open(NOT_FOUND_FILE, 'a') as n:
                     n.write(profilename + "\n")
                     n.close()
             except instaloader.exceptions.QueryReturnedNotFoundException:
