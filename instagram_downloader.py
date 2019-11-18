@@ -12,8 +12,8 @@
 
 __author__ = "Gianluca Fiore"
 __license__ = "GPL"
-__version__ = "0.2"
-__date__ = "20190309"
+__version__ = "0.3"
+__date__ = "20191118"
 __email__ = "forod.g@gmail.com"
 __status__ = "beta"
 
@@ -26,7 +26,7 @@ import argparse
 import instaloader
 
 MAINPATH='/mnt/documents/c/Tempstuff/instagram/'
-DEFAULTSTARTDATE = [2018, 1, 1]
+DEFAULTSTARTDATE = [2019, 1, 1]
 
 def argument_parser():
     cli_parser = argparse.ArgumentParser()
@@ -77,6 +77,9 @@ def massDownload(instance, startdate, enddate, operation):
         content = f.readlines()
         content = ([x.strip() for x in content]) # remove whitespace characters
         for profilename in content:
+            if profilename.startswith('#'):
+                # commenting out a profilename in FILE will mean skipping it
+                continue
             if operation == "update":
                 lastcheckeddate = lastcheck_date(profilename + "/lastcheck")
                 startdate = datetime(lastcheckeddate[0], lastcheckeddate[1], lastcheckeddate[2]) + timedelta(days=1)
