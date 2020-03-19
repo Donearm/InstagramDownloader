@@ -41,10 +41,6 @@ def argument_parser():
             action="store_true",
             help="update only previously downloaded profiles",
             dest="update")
-    cli_parser.add_argument("-i", "--igtv",
-            action="store_true",
-            help="download IGTV videos too",
-            dest="igtvideos")
     cli_parser.add_argument("action",
             nargs="?",
             default="run")
@@ -134,9 +130,6 @@ def main():
         SINCEDATE = datetime(DEFAULTSTARTDATE[0], DEFAULTSTARTDATE[1], DEFAULTSTARTDATE[2])
 
     TODAY = datetime.today()
-
-    if options.igtvideos:
-        L.download_igtv(instaloader.Profile.from_username(L.context, options.action))
 
     if options.action == "run":
         massDownload(L, SINCEDATE, TODAY, "run")
