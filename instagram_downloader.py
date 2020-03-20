@@ -98,6 +98,10 @@ def massDownload(instance, startdate, enddate, operation):
             except instaloader.exceptions.ConnectionException:
                 # Resource not available, maybe anymore. Skip it
                 pass
+            except TypeError as e:
+                print("Error while downloading profile " + profilename)
+                print("Error was: " + str(e))
+                sys.exit(1)
 
             LASTCHECKFILE = profilename + "/lastcheck"
             try:
@@ -140,6 +144,7 @@ def main():
         posts = instaloader.Profile.from_username(L.context, options.action).get_posts()
         for p in dropwhile(lambda p: p.date > TODAY, takewhile(lambda p: p.date > SINCEDATE, posts)):
             L.download_post(p, options.action)
+
 
         LASTCHECKFILE = options.action + "/lastcheck"
         try:
