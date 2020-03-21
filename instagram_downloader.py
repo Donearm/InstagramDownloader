@@ -125,7 +125,7 @@ def massDownload(instance, startdate, enddate, operation):
 def main():
     options = argument_parser()
 
-    logging.basicConfig(filename=LOGFILE, level=logging.DEBUG)
+    logging.basicConfig(filename=LOGFILE, level=logging.WARNING)
 
     # get instance
     L = instaloader.Instaloader(download_videos=False, download_video_thumbnails=False, download_geotags=False, download_comments=False, save_metadata=False, post_metadata_txt_pattern="", request_timeout=10.0)
