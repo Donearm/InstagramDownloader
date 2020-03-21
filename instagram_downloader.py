@@ -19,13 +19,15 @@ __status__ = "beta"
 
 import sys
 from os import chdir
-from os.path import basename
+from os.path import basename, splitext
 from datetime import datetime, timedelta
 from itertools import takewhile, dropwhile
 import argparse
+import logging
 import instaloader
 
 MAINPATH='/mnt/documents/c/Tempstuff/instagram/'
+LOGFILE= MAINPATH + basename(splitext(__file__)[0]) + '.log'
 DEFAULTSTARTDATE = [2019, 1, 1]
 
 def argument_parser():
@@ -88,19 +90,23 @@ def massDownload(instance, startdate, enddate, operation):
                 for p in dropwhile(lambda p: p.date > enddate, takewhile(lambda p: p.date > startdate, posts)):
                     instance.download_post(p, profilename)
             except instaloader.exceptions.ProfileNotExistsException:
-                print("Profile " + profilename + " was not found")
+                logging.info("Profile " + profilename + " was not found")
                 with open(NOT_FOUND_FILE, 'a') as n:
                     n.write(profilename + "\n")
                     n.close()
             except instaloader.exceptions.QueryReturnedNotFoundException:
                 # Image not found. Could have been deleted by user, skip it
+                logging.info("Image " + posts.url + " not found")
                 pass
             except instaloader.exceptions.ConnectionException:
                 # Resource not available, maybe anymore. Skip it
+                logging.info("Resource not available")
                 pass
             except TypeError as e:
                 print("Error while downloading profile " + profilename)
                 print("Error was: " + str(e))
+                logging.debug("Error while downloading profile " + profilename)
+                logging.debug(str(e))
                 sys.exit(1)
 
             LASTCHECKFILE = profilename + "/lastcheck"
@@ -110,6 +116,7 @@ def massDownload(instance, startdate, enddate, operation):
                     t.write("\n" + enddate.__str__())
                     t.close()
             except IOError:
+                logging.debug('Could not write lastcheck file for profile ' + options.action)
                 pass
 
     f.close()
@@ -117,6 +124,8 @@ def massDownload(instance, startdate, enddate, operation):
 
 def main():
     options = argument_parser()
+
+    logging.basicConfig(filename=LOGFILE, level=logging.DEBUG)
 
     # get instance
     L = instaloader.Instaloader(download_videos=False, download_video_thumbnails=False, download_geotags=False, download_comments=False, save_metadata=False, post_metadata_txt_pattern="", request_timeout=10.0)
@@ -153,6 +162,7 @@ def main():
                 t.write("\n" + TODAY.__str__())
                 t.close()
         except IOError:
+            logging.debug('Could not write lastcheck file for profile ' + options.action)
             pass
 
 
