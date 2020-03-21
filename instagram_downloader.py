@@ -24,6 +24,7 @@ from datetime import datetime, timedelta
 from itertools import takewhile, dropwhile
 import argparse
 import logging
+from logging.handlers import RotatingFileHandler
 import instaloader
 
 MAINPATH='/mnt/documents/c/Tempstuff/instagram/'
@@ -61,7 +62,7 @@ def lastcheck_date(cFile):
                 except ValueError:
                     # timestamp in file will raise ValueError. Ignoring it as we don't need last line
                     pass
-            
+
         f.close()
     except FileNotFoundError:
         # if "lastcheck" file is not present, treat this specific directory as a "run" operation
@@ -116,7 +117,7 @@ def massDownload(instance, startdate, enddate, operation):
                     t.write("\n" + enddate.__str__())
                     t.close()
             except IOError:
-                logging.debug('Could not write lastcheck file for profile ' + options.action)
+                logging.debug('Could not write lastcheck file for profile ' + profilename)
                 pass
 
     f.close()
@@ -125,7 +126,8 @@ def massDownload(instance, startdate, enddate, operation):
 def main():
     options = argument_parser()
 
-    logging.basicConfig(filename=LOGFILE, level=logging.WARNING)
+    logging.basicConfig(
+            handlers=[RotatingFileHandler(LOGFILE, maxBytes=1000, backupCount=3)], level=logging.INFO)
 
     # get instance
     L = instaloader.Instaloader(download_videos=False, download_video_thumbnails=False, download_geotags=False, download_comments=False, save_metadata=False, post_metadata_txt_pattern="", request_timeout=10.0)
