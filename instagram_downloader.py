@@ -91,7 +91,7 @@ def massDownload(instance, startdate, enddate, operation):
                 for p in dropwhile(lambda p: p.date > enddate, takewhile(lambda p: p.date > startdate, posts)):
                     instance.download_post(p, profilename)
             except instaloader.exceptions.ProfileNotExistsException:
-                logging.info("Profile " + profilename + " was not found")
+                logging.warning("Profile " + profilename + " was not found")
                 with open(NOT_FOUND_FILE, 'a') as n:
                     n.write(profilename + "\n")
                     n.close()
@@ -101,7 +101,7 @@ def massDownload(instance, startdate, enddate, operation):
                 pass
             except instaloader.exceptions.ConnectionException:
                 # Resource not available, maybe anymore. Skip it
-                logging.info("Resource not available")
+                logging.warning("Resource not available")
                 pass
             except TypeError as e:
                 print("Error while downloading profile " + profilename)
