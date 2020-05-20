@@ -104,7 +104,7 @@ def massDownload(instance, startdate, enddate, operation):
                 logging.warning("Resource not available")
                 pass
             except instaloader.exceptions.BadResponseException:
-                logging.warning("Error fecthing post metadata for " + posts.url)
+                logging.warning("Error fecthing post metadata")
                 pass
             except TypeError as e:
                 print("Error while downloading profile " + profilename)
