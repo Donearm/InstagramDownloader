@@ -47,6 +47,10 @@ def argument_parser():
     cli_parser.add_argument("action",
             nargs="?",
             default="run")
+    cli_parser.add_argument("-p", "--profile",
+            action="store",
+            help="a specific profile name to download everything from",
+            dest="profilename")
 
     opts = cli_parser.parse_args()
     return opts
@@ -125,6 +129,17 @@ def massDownload(instance, startdate, enddate, operation):
 
     f.close()
 
+def loginIG(opts):
+    if opts.action == "full":
+        # we need a different instance, with different options, when we want to download the full posts, igtv and stories of an account
+        L = instaloader.Instaloader(download_video_thumbnails=False, download_geotags=False, download_comments=False, save_metadata=False, post_metadata_txt_pattern="", dirname_pattern=opts.profilename, request_timeout=10.0)
+        L.login('NNNNNNNN', 'XXXXXXXXX')
+        return L
+    else:
+        # standard instance. No videos, basically
+        L = instaloader.Instaloader(download_videos=False, download_video_thumbnails=False, download_geotags=False, download_comments=False, save_metadata=False, post_metadata_txt_pattern="", request_timeout=10.0)
+        L.login('NNNNNNNN', 'XXXXXXXXX')
+        return L
 
 def main():
     options = argument_parser()
@@ -133,8 +148,7 @@ def main():
             handlers=[RotatingFileHandler(LOGFILE, maxBytes=1000, backupCount=3)], level=logging.INFO)
 
     # get instance
-    L = instaloader.Instaloader(download_videos=False, download_video_thumbnails=False, download_geotags=False, download_comments=False, save_metadata=False, post_metadata_txt_pattern="", request_timeout=10.0)
-    L.login('NNNNNNN', 'XXXXXXXX')
+    L = loginIG(options)
 
     chdir(MAINPATH)
 
@@ -153,6 +167,26 @@ def main():
         massDownload(L, SINCEDATE, TODAY, "run")
     elif options.action == "update":
         massDownload(L, SINCEDATE, TODAY, "update")
+    elif options.action == "full":
+        if not options.profilename:
+            print("A profile name must be given when action is 'full'. Use '--profile <profilename>'")
+            sys.exit(1)
+        else:
+            profile = instaloader.Profile.from_username(L.context, options.profilename)
+            posts = profile.get_posts()
+            igtv = profile.get_igtv_posts()
+            for p in dropwhile(lambda p: p.date > TODAY, takewhile(lambda p: p.date > SINCEDATE, posts)):
+                L.download_post(p, options.profilename)
+
+            for ig in dropwhile(lambda ig: ig.date > TODAY, takewhile(lambda ig: ig.date > SINCEDATE, igtv)):
+                L.download_post(ig, options.profilename)
+
+            if profile.has_viewable_story:
+                L.download_stories([profile.userid])
+
+            tagged_posts = profile.get_tagged_posts()
+            for tags in dropwhile(lambda tags: tags.date > TODAY, takewhile(lambda tags: tags.date > SINCEDATE, tagged_posts)):
+                L.download_post(tags, options.profilename)
     else:
         # if no "run" nor "update", assume it is a single profile name it was given and download just that
         posts = instaloader.Profile.from_username(L.context, options.action).get_posts()
