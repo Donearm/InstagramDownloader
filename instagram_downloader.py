@@ -29,7 +29,7 @@ import instaloader
 
 MAINPATH='/mnt/documents/c/Tempstuff/instagram/'
 LOGFILE= MAINPATH + basename(splitext(__file__)[0]) + '.log'
-DEFAULTSTARTDATE = [2019, 1, 1]
+DEFAULTSTARTDATE = [2020, 1, 1]
 
 def argument_parser():
     cli_parser = argparse.ArgumentParser()
