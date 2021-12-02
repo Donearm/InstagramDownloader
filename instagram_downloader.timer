@@ -1,0 +1,11 @@
+[Unit]
+Description=Run instagram_downloader every hour, unless already running
+Requires=instagram_downloader.service
+
+[Timer]
+Unit=instagram_downloader.service
+OnBootSec=10m
+OnUnitActiveSec=60m
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Runs the instagram downloader
+Wants=instagram_downloader.timer
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /usr/local/bin/instagram_downloader.py update
+
+[Install]
+WantedBy=multi-user.target
