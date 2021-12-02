@@ -22,6 +22,7 @@ from os import chdir
 from os.path import basename, splitext
 from datetime import datetime, timedelta
 from itertools import takewhile, dropwhile
+from time import sleep
 import argparse
 import logging
 from logging.handlers import RotatingFileHandler
@@ -94,6 +95,8 @@ def massDownload(instance, startdate, enddate, operation):
                 posts = instaloader.Profile.from_username(instance.context, profilename).get_posts()
                 for p in dropwhile(lambda p: p.date > enddate, takewhile(lambda p: p.date > startdate, posts)):
                     instance.download_post(p, profilename)
+                print("Downloaded 1 profile, now sleeping for 5 minutes...")
+                sleep(300)
             except instaloader.exceptions.ProfileNotExistsException:
                 logging.warning("Profile " + profilename + " was not found")
                 with open(NOT_FOUND_FILE, 'a') as n:
@@ -187,6 +190,8 @@ def main():
             tagged_posts = profile.get_tagged_posts()
             for tags in dropwhile(lambda tags: tags.date > TODAY, takewhile(lambda tags: tags.date > SINCEDATE, tagged_posts)):
                 L.download_post(tags, options.profilename)
+            print("Downloaded 1 profile, now sleeping for 5 minutes...")
+            sleep(300)
     else:
         # if no "run" nor "update", assume it is a single profile name it was given and download just that
         posts = instaloader.Profile.from_username(L.context, options.action).get_posts()
