@@ -96,7 +96,7 @@ def massDownload(instance, startdate, enddate, operation):
                 posts = instaloader.Profile.from_username(instance.context, profilename).get_posts()
                 for p in dropwhile(lambda p: p.date > enddate, takewhile(lambda p: p.date > startdate, posts)):
                     instance.download_post(p, profilename)
-                print("Downloaded 1 profile, now sleeping for 5 minutes...")
+                print("Downloaded 1 profile, now taking a break...")
                 sleep(SLEEPTIME)
             except instaloader.exceptions.ProfileNotExistsException:
                 logging.warning("Profile " + profilename + " was not found")
@@ -191,7 +191,7 @@ def main():
             tagged_posts = profile.get_tagged_posts()
             for tags in dropwhile(lambda tags: tags.date > TODAY, takewhile(lambda tags: tags.date > SINCEDATE, tagged_posts)):
                 L.download_post(tags, options.profilename)
-            print("Downloaded 1 profile, now sleeping for 5 minutes...")
+            print("Downloaded 1 profile, now taking a break...")
             sleep(SLEEPTIME)
     else:
         # if no "run" nor "update", assume it is a single profile name it was given and download just that
