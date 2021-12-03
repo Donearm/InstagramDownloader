@@ -31,6 +31,7 @@ import instaloader
 MAINPATH='/mnt/documents/c/Tempstuff/instagram/'
 LOGFILE= MAINPATH + basename(splitext(__file__)[0]) + '.log'
 DEFAULTSTARTDATE = [2020, 1, 1]
+SLEEPTIME = 600 # time in seconds of pause the downloading between profiles
 
 def argument_parser():
     cli_parser = argparse.ArgumentParser()
@@ -96,7 +97,7 @@ def massDownload(instance, startdate, enddate, operation):
                 for p in dropwhile(lambda p: p.date > enddate, takewhile(lambda p: p.date > startdate, posts)):
                     instance.download_post(p, profilename)
                 print("Downloaded 1 profile, now sleeping for 5 minutes...")
-                sleep(300)
+                sleep(SLEEPTIME)
             except instaloader.exceptions.ProfileNotExistsException:
                 logging.warning("Profile " + profilename + " was not found")
                 with open(NOT_FOUND_FILE, 'a') as n:
@@ -191,7 +192,7 @@ def main():
             for tags in dropwhile(lambda tags: tags.date > TODAY, takewhile(lambda tags: tags.date > SINCEDATE, tagged_posts)):
                 L.download_post(tags, options.profilename)
             print("Downloaded 1 profile, now sleeping for 5 minutes...")
-            sleep(300)
+            sleep(SLEEPTIME)
     else:
         # if no "run" nor "update", assume it is a single profile name it was given and download just that
         posts = instaloader.Profile.from_username(L.context, options.action).get_posts()
